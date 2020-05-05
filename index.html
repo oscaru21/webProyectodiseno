@@ -24,16 +24,35 @@
       text-align: center;
       color: #00a1ab;
     }
+    h3 {
+      font-family: Arial;
+      font-size: 1rem;
+      text-align: center;
+      color: #00a1ab;
+    }
+    .center {
+      text-align: center;
+    }
   </style>
 </head>
 
 <body>
   <h1>Particle Photon Medidor de Luz</h1>
-  <!--<img src="https://ksr-ugc.imgix.net/photos/432/particle-vertical.original.png?ixlib=rb-2.1.0&w=220&h=220&fit=crop&v=&auto=format&frame=1&q=92&s=3c3698f380012d7ac7c27121b7249ce5" class="center">-->
-  <h2 id="msg">Estado. </h2>
+  <div class="center">
+    <h3>Device ID:<input id="ID" type="text" name="deviceID" value=""></h3>
+    <h3>Access Token:<input id="AT" type="text" name="access-token" value=""></h3>
+    <button onclick="savedata()" type="button" name="button">Connect</button><br>
+  </div>
+  <h2><span id="msg"></span> <span id="porcen"></span>%</h2>
   <div id="chart-luz" class="container"></div>
 </body>
 <script>
+var deviceID = "1c002b000247353137323334";
+var access_token = "092d464b00c1199e24b10b453ee87216d5586272";
+function savedata(){
+  deviceID = document.getElementById("ID").value;
+  access_token = document.getElementById("AT").value;
+}
   var chartL = new Highcharts.Chart({
     chart: {
       renderTo: 'chart-luz'
@@ -60,7 +79,7 @@
       type: 'datetime',
       dateTimeLabelFormats: {
         //second: '%H:%M:%S'
-        second: '%M:%S'
+        second: '%S'
       }
     },
     yAxis: {
@@ -74,14 +93,17 @@
   });
   setInterval(function() {
     var requestURL;
-    requestURL = "https://api.particle.io/v1/devices/1c002b000247353137323334/mensaje?access_token=092d464b00c1199e24b10b453ee87216d5586272"
+    //requestURL = "https://api.particle.io/v1/devices/1c002b000247353137323334/mensaje?access_token=092d464b00c1199e24b10b453ee87216d5586272"
+    requestURL = "https://api.particle.io/v1/devices/"+ deviceID +"/mensaje?access_token="+access_token;
     $.getJSON(requestURL, function(json){
     document.getElementById("msg").innerHTML = json.result;
     });
-    requestURL = "https://api.particle.io/v1/devices/1c002b000247353137323334/porcentaje?access_token=092d464b00c1199e24b10b453ee87216d5586272"
+    //requestURL = "https://api.particle.io/v1/devices/1c002b000247353137323334/porcentaje?access_token=092d464b00c1199e24b10b453ee87216d5586272"
+    requestURL = "https://api.particle.io/v1/devices/"+ deviceID +"/porcentaje?access_token="+access_token;
     $.getJSON(requestURL, function(json){
     var x = (new Date()).getTime(),
       y = parseFloat(json.result);
+      document.getElementById("porcen").innerHTML = y;
       if (chartL.series[0].data.length > 60) {
         chartL.series[0].addPoint([x, y], true, true, true);
       } else {

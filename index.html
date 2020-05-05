@@ -10,20 +10,27 @@
       max-width: 800px;
       height: 400px;
       margin: 0 auto;
-      background-color: black;
+      background-color: white;
     }
-
+    h1 {
+      font-family: Arial;
+      font-size: 3rem;
+      text-align: center;
+      color: #00263b;
+    }
     h2 {
       font-family: Arial;
       font-size: 2.5rem;
       text-align: center;
-      color: white;
+      color: #00a1ab;
     }
   </style>
 </head>
 
 <body>
-  <h2>Particle Photon Medidor de Luz</h2>
+  <h1>Particle Photon Medidor de Luz</h1>
+  <!--<img src="https://ksr-ugc.imgix.net/photos/432/particle-vertical.original.png?ixlib=rb-2.1.0&w=220&h=220&fit=crop&v=&auto=format&frame=1&q=92&s=3c3698f380012d7ac7c27121b7249ce5" class="center">-->
+  <h2 id="msg">Estado. </h2>
   <div id="chart-luz" class="container"></div>
 </body>
 <script>
@@ -46,13 +53,14 @@
         }
       },
       series: {
-        color: '#059e8a'
+        color: '#00a1ab'
       }
     },
     xAxis: {
       type: 'datetime',
       dateTimeLabelFormats: {
-        second: '%H:%M:%S'
+        //second: '%H:%M:%S'
+        second: '%M:%S'
       }
     },
     yAxis: {
@@ -66,31 +74,20 @@
   });
   setInterval(function() {
     var requestURL;
-    requestURL = "https://api.particle.io/v1/devices/1c002b000247353137323334/luz?access_token=092d464b00c1199e24b10b453ee87216d5586272"
+    requestURL = "https://api.particle.io/v1/devices/1c002b000247353137323334/mensaje?access_token=092d464b00c1199e24b10b453ee87216d5586272"
     $.getJSON(requestURL, function(json){
-
+    document.getElementById("msg").innerHTML = json.result;
+    });
+    requestURL = "https://api.particle.io/v1/devices/1c002b000247353137323334/porcentaje?access_token=092d464b00c1199e24b10b453ee87216d5586272"
+    $.getJSON(requestURL, function(json){
     var x = (new Date()).getTime(),
       y = parseFloat(json.result);
-      if (chartL.series[0].data.length > 40) {
+      if (chartL.series[0].data.length > 60) {
         chartL.series[0].addPoint([x, y], true, true, true);
       } else {
         chartL.series[0].addPoint([x, y], true, false, true);
       }
       });
-    /*var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        var x = (new Date()).getTime(),
-          y = parseFloat(this.responseText);
-        if (chartL.series[0].data.length > 40) {
-          chartL.series[0].addPoint([x, y], true, true, true);
-        } else {
-          chartL.series[0].addPoint([x, y], true, false, true);
-        }
-      }
-    };
-    xhttp.open("GET", "https://api.particle.io/v1/devices/1c002b000247353137323334/luz?access_token=092d464b00c1199e24b10b453ee87216d5586272", true);
-    xhttp.send();*/
   }, 5000);
 </script>
 
